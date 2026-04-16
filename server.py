@@ -1,32 +1,38 @@
 ﻿from flask import Flask, request
-import requests
-import os
+import os, uuid, telegram
+
+TOKEN = ":"
+bot = telegram.Bot(token=TOKEN)
 
 app = Flask(__name__)
 
-TOKEN = os.environ.get("TOKEN", " 8799766843:AAGjQKYAsSRUQExYWcE1FB4yLEtUROqYyGk")
-URL = f"https://api.telegram.org/bot{TOKEN}"
+JOBS = "jobs"
+RESULTS = "results"
+
+os.makedirs(JOBS, exist_ok=True)
+os.makedirs(RESULTS, exist_ok=True)
 
 @app.route("/")
 def home():
-    return "Bot is running!"
+    return "Server Running"
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.json
-    
-    if "message" in data:
-        chat_id = data["message"]["chat"]["id"]
-        text = data["message"].get("text", "")
+    update = telegram.Update.de_json(request.get_json(force=True), bot)
 
-        reply = f"You said: {text}"
+    if update.message and update.message.document:
+        file = update.message.document
+        chat_id = update.message.chat.id
 
-        requests.post(f"{URL}/sendMessage", json={
-            "chat_id": chat_id,
-            "text": reply
-        })
+        job_id = str(uuid.uuid4())
+        file_path = f"{JOBS}/{job_id}.bin"
+
+        new_file = bot.get_file(file.file_id)
+        new_file.download(file_path)
+
+        with open(f"{JOBS}/{job_id}.txt", "w") as f:
+            f.write(str(chat_id))
+
+        bot.send_message(chat_id, "Queued for processing...")
 
     return "ok"
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
