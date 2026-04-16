@@ -1,10 +1,12 @@
-﻿from flask import Flask, request
-import os, uuid, telegram
-
-TOKEN = "        subprocess.run(["
-bot = telegram.Bot(token=TOKEN)
+from flask import Flask, request
+import requests
+import os
+import telegram
 
 app = Flask(__name__)
+
+TOKEN = os.getenv("BOT_TOKEN")
+bot = telegram.Bot(token=TOKEN)
 
 JOBS = "jobs"
 RESULTS = "results"
@@ -20,19 +22,25 @@ def home():
 def webhook():
     update = telegram.Update.de_json(request.get_json(force=True), bot)
 
-    if update.message and update.message.document:
-        file = update.message.document
+    if update.message:
         chat_id = update.message.chat.id
 
-        job_id = str(uuid.uuid4())
-        file_path = f"{JOBS}/{job_id}.bin"
+        if update.message.text:
+            bot.send_message(chat_id, f"You said: {update.message.text}")
 
-        new_file = bot.get_file(file.file_id)
-        new_file.download(file_path)
+        if update.message.document:
+            file = update.message.document
+            job_id = "test123"
 
-        with open(f"{JOBS}/{job_id}.txt", "w") as f:
-            f.write(str(chat_id))
+            file_path = f"{JOBS}/{job_id}.bin"
 
-        bot.send_message(chat_id, "Queued for processing...")
+            new_file = bot.get_file(file.file_id)
+            new_file.download(file_path)
+
+            bot.send_message(chat_id, "Queued for processing...")
 
     return "ok"
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
