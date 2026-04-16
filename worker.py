@@ -19,7 +19,6 @@ def process(file, job_id):
             zip_ref.extractall(base+"/raw")
 
     if file.endswith(".so"):
-        subprocess.run([
             "C:/ghidra/support/analyzeHeadless.bat",
             base+"/ghidra_proj",
             "proj",
@@ -28,7 +27,8 @@ def process(file, job_id):
         ])
 
     shutil.make_archive(base, 'zip', base)
-    return base + 
+    return base + ".zip"
+
 
 while True:
     for f in os.listdir(JOBS):
