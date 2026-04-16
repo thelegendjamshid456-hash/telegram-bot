@@ -28,10 +28,10 @@ def process(file, job_id):
         ])
 
     shutil.make_archive(base, 'zip', base)
-    return base + ".zip"
+    return base + 
 
-
-while T    for f in os.listdir(JOBS):
+while True:
+    for f in os.listdir(JOBS):
         if f.endswith(".bin"):
             job_id = f.split(".")[0]
             file_path = os.path.join(JOBS, f)
