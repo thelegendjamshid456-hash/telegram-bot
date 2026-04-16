@@ -1,7 +1,7 @@
 ﻿from flask import Flask, request
 import os, uuid, telegram
 
-TOKEN = "         "-deleteProject""
+TOKEN = "rue:"
 bot = telegram.Bot(token=TOKEN)
 
 app = Flask(__name__)

@@ -24,14 +24,14 @@ def process(file, job_id):
             base+"/ghidra_proj",
             "proj",
             "-import", file,
-           ])
+            "-deleteProject"
+        ])
 
     shutil.make_archive(base, 'zip', base)
     return base + ".zip"
 
 
-while True:
-    for f in os.listdir(JOBS):
+while T    for f in os.listdir(JOBS):
         if f.endswith(".bin"):
             job_id = f.split(".")[0]
             file_path = os.path.join(JOBS, f)
